@@ -8,4 +8,4 @@ setup(name='xmap',
       author='Joe Hamman',
       author_email='jhamman@ucar.edu',
       url='https://github.com/jhamman/xmap',
-      packages=['xmap', 'xmap.xmap'])
+      packages=['xmap'])
