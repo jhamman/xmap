@@ -1,5 +1,6 @@
 
 import numpy as np
+import xarray.ufuncs as xu
 
 
 def lon_lat_to_cartesian(lon, lat, radius=1):
@@ -8,12 +9,23 @@ def lon_lat_to_cartesian(lon, lat, radius=1):
     radius radius
     """
 
-    lon, lat = np.meshgrid(lon, lat)
+    # Unpack xarray object into plane arrays
+    if hasattr(lon, 'data'):
+        lon = lon.data
+    if hasattr(lat, 'data'):
+        lat = lat.data
 
-    lon_r = np.radians(lon)
-    lat_r = np.radians(lat)
+    if lon.ndim != lat.ndim:
+        raise ValueError('coordinate must share the same number of dimensions')
 
-    x = radius * np.cos(lat_r) * np.cos(lon_r)
-    y = radius * np.cos(lat_r) * np.sin(lon_r)
-    z = radius * np.sin(lat_r)
-    return x, y, z
+    if lon.ndim == 1:
+        lon, lat = np.meshgrid(lon, lat)
+
+    lon_r = xu.radians(lon)
+    lat_r = xu.radians(lat)
+
+    x = radius * xu.cos(lat_r) * xu.cos(lon_r)
+    y = radius * xu.cos(lat_r) * xu.sin(lon_r)
+    z = radius * xu.sin(lat_r)
+
+    return x.flatten(), y.flatten(), z.flatten()
